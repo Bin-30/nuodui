@@ -1,0 +1,11 @@
+server:
+  port: 10086
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/nuo_dui?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
+    username: root
+    password: 1234
+logging:
+  level:
+    com.cn.nuodui: trace
+

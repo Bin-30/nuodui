@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cn.nuodui.mapper.UserMapper">
+  <resultMap id="BaseResultMap" type="com.cn.nuodui.entity.Usertable">
+    <id column="uCode" jdbcType="INTEGER" property="ucode" />
+    <result column="uName" jdbcType="VARCHAR" property="uname" />
+    <result column="uPwd" jdbcType="VARCHAR" property="upwd" />
+    <result column="uType" jdbcType="INTEGER" property="utype" />
+    <result column="uMemo" jdbcType="VARCHAR" property="umemo" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    uCode, uName, uPwd, uType, uMemo
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from usertable
+    where uCode = #{ucode,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByUname" resultType="com.cn.nuodui.entity.Usertable">
+    select uCode,uName,uPwd,uMemo,uType from usertable
+    where uName=#{uname}
+  </select>
+  <select id="listUser" resultType="com.cn.nuodui.entity.Usertable">
+    select uCode,uName,uPwd,uMemo,uType from usertable
+  </select>
+    <select id="getType" resultType="java.lang.Integer">
+      select uType from usertable where uName=#{uname}
+    </select>
+
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from usertable
+    where uCode = #{ucode,jdbcType=INTEGER}
+  </delete>
+
+
+  <insert id="insert" keyColumn="uCode" keyProperty="ucode" parameterType="com.cn.nuodui.entity.Usertable" useGeneratedKeys="true">
+    insert into usertable (uName, uPwd, uType, 
+      uMemo)
+    values (#{uname,jdbcType=VARCHAR}, #{upwd,jdbcType=VARCHAR}, #{utype,jdbcType=INTEGER}, 
+      #{umemo,jdbcType=VARCHAR})
+  </insert>
+
+
+  <insert id="insertSelective" keyColumn="uCode" keyProperty="ucode" parameterType="com.cn.nuodui.entity.Usertable" useGeneratedKeys="true">
+    insert into usertable
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="uname != null">
+        uName,
+      </if>
+      <if test="upwd != null">
+        uPwd,
+      </if>
+      <if test="utype != null">
+        uType,
+      </if>
+      <if test="umemo != null">
+        uMemo,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="uname != null">
+        #{uname,jdbcType=VARCHAR},
+      </if>
+      <if test="upwd != null">
+        #{upwd,jdbcType=VARCHAR},
+      </if>
+      <if test="utype != null">
+        #{utype,jdbcType=INTEGER},
+      </if>
+      <if test="umemo != null">
+        #{umemo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cn.nuodui.entity.Usertable">
+    update usertable
+    <set>
+      <if test="uname != null">
+        uName = #{uname,jdbcType=VARCHAR},
+      </if>
+      <if test="upwd != null">
+        uPwd = #{upwd,jdbcType=VARCHAR},
+      </if>
+      <if test="utype != null">
+        uType = #{utype,jdbcType=INTEGER},
+      </if>
+      <if test="umemo != null">
+        uMemo = #{umemo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where uCode = #{ucode,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cn.nuodui.entity.Usertable">
+    update usertable
+    set uName = #{uname,jdbcType=VARCHAR},
+      uPwd = #{upwd,jdbcType=VARCHAR},
+      uType = #{utype,jdbcType=INTEGER},
+      uMemo = #{umemo,jdbcType=VARCHAR}
+    where uCode = #{ucode,jdbcType=INTEGER}
+  </update>
+</mapper>

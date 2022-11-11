@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户列表</title>
+</head>
+<body>
+<div>
+    <template>
+        <el-table
+                :data="users"
+                border
+                style="width: 100%">
+            <el-table-column
+                    prop="ucode" label="编号" width="150">
+            </el-table-column>
+            <el-table-column
+                    prop="uname" label="用户名" width="150">
+            </el-table-column>
+            <el-table-column
+                    prop="" label="密码" width="150">
+                <span>***</span>
+            </el-table-column>
+            <el-table-column
+                    prop="utype" label="类型" width="150">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.utype==1">管理员</span>
+                    <span v-else>普通用户</span>
+                </template>
+            </el-table-column>
+            <el-table-column
+                    prop="umemo" label="备注" width="150">
+            </el-table-column>
+            <el-table-column
+                    prop="" label="操作">
+                <template slot-scope="scope">
+                    <el-button :disabled="!(code==1)" @click="function (){dialogFormVisible1=!dialogFormVisible1}"
+                               type="info" size="small">新建
+                    </el-button>
+                    <el-button :disabled="!(code==1||scope.row.ucode==code)" @click="update(scope.row.ucode)"
+                               type="info" size="small">修改
+                    </el-button>
+                    <el-button :disabled="!(code==1&&scope.row.ucode!=code)" @click="remove(scope.row.ucode)"
+                               type="info" size="small">删除
+                    </el-button>
+                    <el-button @click="show(scope.row.ucode)" type="info" size="small">详细</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+    </template>
+
+    <el-dialog title="新增" :visible.sync="dialogFormVisible1">
+        <el-form :label-position="labelPosition" label-width="80px" :model="record1">
+            <el-form-item label="用户名">
+                <el-input v-model="record1.uname"></el-input>
+            </el-form-item>
+            <el-form-item label="密码">
+                <el-input v-model="record1.upwd"></el-input>
+            </el-form-item>
+            <el-form-item label="备注">
+                <el-input v-model="record1.umemo"></el-input>
+            </el-form-item>
+            <el-form-item label="类型">
+                <el-radio v-model="record1.utype" label="1">管理员</el-radio>
+            </el-form-item>
+        </el-form>
+        <el-button type="primary" @click="add()">确 定</el-button>
+        <el-button @click="dialogFormVisible1 = false">取 消</el-button>
+    </el-dialog>
+
+    <el-dialog title="编辑" :visible.sync="dialogFormVisible2">
+        <el-form :label-position="labelPosition" label-width="80px" :model="record2">
+            <el-form-item label="编号">
+                <el-input v-model="record2.ucode" readonly></el-input>
+            </el-form-item>
+            <el-form-item label="用户名">
+                <el-input v-model="record2.uname" readonly></el-input>
+            </el-form-item>
+            <el-form-item label="密码">
+                <el-input v-model="record2.upwd" type="password"></el-input>
+            </el-form-item>
+            <el-form-item label="备注">
+                <el-input v-model="record2.umemo"></el-input>
+            </el-form-item>
+            <el-form-item label="类型">
+                <el-radio v-model="record2.utype" label="1">管理员</el-radio>
+            </el-form-item>
+        </el-form>
+        <el-button type="primary" @click="insert()">确 定</el-button>
+        <el-button @click="dialogFormVisible2 = false">取 消</el-button>
+    </el-dialog>
+
+    <el-dialog title="详细信息" :visible.sync="dialogFormVisible3">
+        <el-form :label-position="labelPosition" label-width="80px" :model="record3">
+            <el-form-item label="编号">
+                <el-input v-model="record3.ucode" readonly></el-input>
+            </el-form-item>
+            <el-form-item label="用户名">
+                <el-input v-model="record3.uname" readonly></el-input>
+            </el-form-item>
+            <el-form-item label="备注">
+                <el-input v-model="record3.umemo" readonly></el-input>
+            </el-form-item>
+        </el-form>
+        <el-button @click="dialogFormVisible3 = false">返 回</el-button>
+    </el-dialog>
+
+
+</div>
+</body>
+<script src="https://cdn.staticfile.org/vue/2.6.14/vue.min.js"></script>
+<!-- 引入样式 -->
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<script>
+    let v = new Vue({
+        el: "body>div",
+        data: {
+            users: [],
+            code: "",
+            labelPosition: 'right',
+            dialogFormVisible1: false,
+            dialogFormVisible2: false,
+            dialogFormVisible3: false,
+            record1: {},
+            record2: {},
+            record3: {},
+        },
+        methods: {
+            /*修改时展示原来信息*/
+            update(ucode) {
+                v.dialogFormVisible2 = !v.dialogFormVisible2;
+                axios.get("http://localhost:10086/user/get/" + ucode).then(function (response) {
+                    v.record2 = response.data.data;
+                })
+            },
+            /*提交修改后的信息*/
+            insert() {
+                axios.post("http://localhost:10086/user/update", v.record2).then(function (response) {
+                    alert("修改成功");
+                    location.href = "/list.html";
+                })
+            },
+            add() {
+                axios.post("http://localhost:10086/user/add", v.record1).then(function (response) {
+                    alert("新增成功")
+                    location.href = "/list.html";
+                })
+            },
+            remove(ucode) {
+                axios.post("http://localhost:10086/user/delete/" + ucode).then(function (response) {
+                    if (response.data.state==401){
+                        alert("不能删除管理员");
+                        location.href = "/list.html";
+                    }else {
+                        alert("删除成功");
+                        location.href = "/list.html";
+                    }
+                })
+            },
+            show(ucode) {
+                v.dialogFormVisible3 = !v.dialogFormVisible3;
+                axios.get("http://localhost:10086/user/get/" + ucode).then(function (response) {
+                    v.record3 = response.data.data;
+                })
+            },
+        },
+
+        created: function () {
+            if (window.localStorage.getItem("ucode") == null) {
+                alert("请先登录");
+                location.href = "/login.html";
+            } else {
+                axios.get("http://localhost:10086/user/list").then(function (response) {
+                    v.users = response.data.data;
+                    v.code = window.localStorage.getItem("ucode");
+                })
+            }
+
+        }
+    })
+</script>
+
+</html>

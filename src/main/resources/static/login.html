@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        body{
+            margin: 0;
+            background-size: cover;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <br>
+    <br>
+    <br>
+    <el-card style="width: 600px;height: 330px;margin: 0 auto; background-color: rgba(255,255,255,0.3)">
+        <el-form style="width: 400px;margin: 50px auto" label-width="60px">
+            <el-form-item label="用户名">
+                <el-input type="text"  v-model="user.uname" placeholder="请输入用户名"></el-input>
+            </el-form-item>
+            <el-form-item label="密码">
+                <el-input type="password" v-model="user.upwd"  @keydown.native.enter="login()" placeholder="请输入密码"></el-input>
+            </el-form-item>
+            <el-form-item >
+                <el-button style="position: relative;right: 30px" type="primary" @click="login()">登录</el-button>
+            </el-form-item>
+        </el-form>
+
+    </el-card>
+</div>
+</body>
+<!-- import Vue before Element -->
+<script src="https://cdn.staticfile.org/vue/2.6.14/vue.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    let v = new Vue({
+        el: '#app',
+        data: function() {
+            return {//在这里面定义变量
+                user:{
+                    uname:"",
+                    upwd:""
+                }
+            }
+        },
+        methods:{
+            login(){
+                console.log("输入的用户名"+this.user.uname);
+                axios.post("/user/login",v.user).then(function (response) {
+                    if (response.data.state==200){
+                        alert("登录成功")
+                        console.log(response.data.data)
+                        window.localStorage.setItem("ucode",response.data.data.ucode);
+                        location.href="/list.html";
+                    }else if (response.data.state==401){
+                        v.$message.error("密码错误")
+                    }else {
+                        console.log(response.data.state);
+                        v.$message.error("用户不存在");
+                    }
+                })
+            }
+        }
+    })
+
+</script>
+</html>
